@@ -58,7 +58,7 @@ jobs:
           gh release create "$RELEASE_VERSION" --title "$RELEASE_VERSION" --notes "Automated release for version $RELEASE_VERSION" --draft
 
   upload-file:
-    needs: create-release
+    needs: [create-release, generate-version]
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -72,10 +72,10 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           echo "Uploading $RELEASE_FILE to release $RELEASE_VERSION"
-          gh release upload "$RELEASE_VERSION" $RELEASE_FILE --clobber
+          gh release upload "$RELEASE_VERSION" "$RELEASE_FILE" --clobber
 
   publish-release:
-    needs: upload-file
+    needs: [upload-file, generate-version]
     runs-on: ubuntu-latest
     permissions:
       contents: write
